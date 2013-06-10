@@ -184,9 +184,50 @@ lightbox = new Lightbox options
     };
 
     Lightbox.prototype.sizeContainer = function(imageWidth, imageHeight) {
+    	// idea by: http://lokeshdhakar.com/forums/index.php?p=/discussion/comment/19944#Comment_19944
       var $container, $lightbox, $outerContainer, containerBottomPadding, containerLeftPadding, containerRightPadding, containerTopPadding, newHeight, newWidth, oldHeight, oldWidth,
         _this = this;
       $lightbox = $('#lightbox');
+      
+      var paddingSize = 10;
+			
+      var f_windowWidth = $(window).width(),
+      f_windowHeight = $(window).height(),
+      imageBoxWidth = f_windowWidth-3*paddingSize,
+      imageBoxHeight = f_windowHeight-3*paddingSize-$lightbox.find('.lb-dataContainer').height(),
+      f_diffWidth = imageWidth - f_windowWidth,    //check if image is larger than the window
+      f_diffHeight = imageHeight - f_windowHeight;  //both width and height
+
+      if ( (f_diffWidth > 0) || (f_diffHeight > 0) )
+      {
+            //if any diff is positive it means the image is larger and we need to resize
+            if (imageWidth < imageHeight)
+            {
+                  // the biggest diff determines which parameter we should base the resize on
+                  // resize based on Width.
+                  imageHeight = Math.round((imageHeight * imageBoxWidth) / imageWidth);//just some rounding to get an absolute pixel value
+                  imageWidth = imageBoxWidth;
+            }
+            else
+            {
+                  //resize based on Height.
+                  imageWidth = Math.round((imageWidth * imageBoxHeight) / imageHeight);
+                  imageHeight = imageBoxHeight;
+            }
+            $('.lb-image').width(imageWidth); //Thanks Esolle for these lines!
+            $('.lb-image').height(imageHeight);
+      }
+			
+			
+      $outerContainer = $lightbox.find('.lb-outerContainer');
+      oldWidth = $outerContainer.outerWidth();
+      oldHeight = $outerContainer.outerHeight();
+      $container = $lightbox.find('.lb-container');
+      containerTopPadding = parseInt($container.css('padding-top'), paddingSize);
+      containerRightPadding = parseInt($container.css('padding-right'), paddingSize);
+      containerBottomPadding = parseInt($container.css('padding-bottom'), paddingSize);
+      containerLeftPadding = parseInt($container.css('padding-left'), paddingSize);
+      
       $outerContainer = $lightbox.find('.lb-outerContainer');
       oldWidth = $outerContainer.outerWidth();
       oldHeight = $outerContainer.outerHeight();
